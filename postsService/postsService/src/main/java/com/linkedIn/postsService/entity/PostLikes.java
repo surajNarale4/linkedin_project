@@ -1,4 +1,4 @@
-package com.linkedIn.postsService.controller;
+package com.linkedIn.postsService.entity;
 
 
 import jakarta.persistence.*;
@@ -23,6 +23,9 @@ public class PostLikes {
 
     @Column(nullable=false)
     private Long userId;
+
+    @Column(nullable = false)
+    private Long postId;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

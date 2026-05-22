@@ -2,7 +2,6 @@ package com.linkedIn.postsService.exception;
 
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,6 +16,14 @@ public class GlobalExceptionHandler {
         log.info("resource not found exception ");
         ApiError apiError =new ApiError(resourceNotFoundException.getMessage(), HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(apiError,HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ApiError> badRequestException(BadRequestException bad){
+
+        ApiError apiError =new ApiError(bad.getMessage(), HttpStatus.NOT_ACCEPTABLE);
+        return new ResponseEntity<>(apiError,HttpStatus.NOT_ACCEPTABLE);
+
+
     }
 
     @ExceptionHandler(BadRequestException.class)

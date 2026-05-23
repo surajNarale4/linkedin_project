@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/likes")
+@RequestMapping("likes")
 @RequiredArgsConstructor
 public class PostLikesController {
 
@@ -19,7 +19,7 @@ public class PostLikesController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("{postId}")
+    @DeleteMapping("/{postId}")
     public ResponseEntity<Void> unlikePost(@PathVariable Long postId){
         postLikesService.unlikePost(postId);
         return ResponseEntity.noContent().build();

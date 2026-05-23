@@ -26,11 +26,7 @@ public class GlobalExceptionHandler {
 
     }
 
-    @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ApiError> resourceNotFound(BadRequestException badRequestException){
-        ApiError apiError =new ApiError(badRequestException.getMessage(), HttpStatus.BAD_REQUEST);
-        return new ResponseEntity<>(apiError,HttpStatus.BAD_REQUEST);
-    }
+
 
 //    @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ApiError> resourceNotFound(RuntimeException runtimeException){

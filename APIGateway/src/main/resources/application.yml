@@ -16,12 +16,22 @@ spring:
                 - Path=/api/v1/user/**
               filters:
                 - StripPrefix=2
+
             - id: post-service
               uri: lb://POSTSSERVICE
               predicates:
                 - Path=/api/v1/posts/**
               filters:
                 - StripPrefix=2
+                - name: AuthenticationFilter
+
+            - id: connection-service
+              uri: lb://CONNECTIONSERVICE
+              predicates:
+                - Path=/api/v1/connections
+              filters:
+                - StripPrefix=2
+                - name: AuthenticationFilter
 
 eureka:
   client:
@@ -32,3 +42,8 @@ logging:
   level:
     org.springframework.cloud.gateway: TRACE
     org.springframework.web: DEBUG
+
+
+jwt:
+  secret:
+      key: jnewjknjdnejknk3nfn34rui43riuh34r34yry43r34hfhiuehfu4j438rm3h4rsh34hi5uh92t3298rod22b1a1a3ur8x124orij

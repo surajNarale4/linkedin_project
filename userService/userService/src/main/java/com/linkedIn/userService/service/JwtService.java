@@ -23,9 +23,11 @@ public class JwtService {
     }
 
     public String generateAccessToken(User user){
+
         return Jwts.builder()
                 .setSubject(user.getId().toString())
                 .claim("email",user.getEmail())
+                .claim("userId",user.getId())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000*60*100))
                 .signWith(getSecretKey())

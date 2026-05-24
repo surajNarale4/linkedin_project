@@ -1,0 +1,34 @@
+server:
+  port: 8080
+
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: user-service
+              uri: lb://USERSERVICE
+              predicates:
+                - Path=/api/v1/user/**
+              filters:
+                - StripPrefix=2
+            - id: post-service
+              uri: lb://POSTSSERVICE
+              predicates:
+                - Path=/api/v1/posts/**
+              filters:
+                - StripPrefix=2
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:9024/eureka/
+
+logging:
+  level:
+    org.springframework.cloud.gateway: TRACE
+    org.springframework.web: DEBUG

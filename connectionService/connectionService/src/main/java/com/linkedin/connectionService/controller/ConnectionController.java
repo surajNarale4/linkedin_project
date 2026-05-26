@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/core")
+@RequestMapping("core")
 public class ConnectionController {
     private final ConnectionsService connectionsService;
 

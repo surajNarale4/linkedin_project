@@ -18,8 +18,8 @@
         </processorPath>
         <module name="APIGateway" />
         <module name="connectionService" />
-        <module name="userService" />
         <module name="postsService" />
+        <module name="userService" />
       </profile>
     </annotationProcessing>
   </component>

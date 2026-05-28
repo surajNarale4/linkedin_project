@@ -17,6 +17,7 @@ public class ConnectionsService {
     private final PersonRepository personRepository;
 
     public List<Person> getFirstDegreeConnectionsOfUser(Long userId){
+        log.info("Getting First-degree connection for user {}",userId);
         return personRepository.getFirstDegreePersons(userId);
     }
 

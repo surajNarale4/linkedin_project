@@ -1,5 +1,8 @@
 package com.linkedIn.postsService.service;
 
+import com.linkedIn.postsService.auth.AuthContextHolder;
+import com.linkedIn.postsService.client.ConnectionServiceClient;
+import com.linkedIn.postsService.dto.PersonDTO;
 import com.linkedIn.postsService.dto.PostCreateRequestDTO;
 import com.linkedIn.postsService.dto.PostDTO;
 import com.linkedIn.postsService.entity.Post;
@@ -21,6 +24,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final ModelMapper modelMapper;
+    private final ConnectionServiceClient connectionServiceClient;
 
     public PostDTO createPost(PostCreateRequestDTO postCreateDTO, long userId) {
         log.info("creating post of user id {}:",userId);
@@ -32,6 +36,13 @@ public class PostService {
 
     public PostDTO getPostById(Long postId) {
         log.info("getting post by id {}:",postId);
+        Long correntUser =AuthContextHolder.getCurrentUserId();
+        //TODO Will Remove in future
+        //Call the connection service from post service
+        // and pass the user-id in the header
+        List<PersonDTO> personDTOList =connectionServiceClient.getFirstDegreeConnections(correntUser);
+        log.info("we got all first degree connection's {}",personDTOList);
+
         Post post = postRepository.findById(postId).orElseThrow(()->new ResourceNotFoundException("no resource found for "+postId));
         return modelMapper.map(post,PostDTO.class);
     }

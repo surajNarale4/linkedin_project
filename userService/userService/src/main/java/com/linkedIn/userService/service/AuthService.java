@@ -1,12 +1,15 @@
 package com.linkedIn.userService.service;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
+import com.linkedIn.userService.client.ConnectionClient;
 import com.linkedIn.userService.dto.LoginRequestDTO;
+import com.linkedIn.userService.dto.PersonDTO;
 import com.linkedIn.userService.dto.SignupRequestDTO;
 import com.linkedIn.userService.dto.UserDTO;
 import com.linkedIn.userService.entity.User;
 import com.linkedIn.userService.exception.BadRequestException;
 import com.linkedIn.userService.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,7 +23,10 @@ public class AuthService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final JwtService jwtService;
+    private final ConnectionClient connectionClient;
 
+
+    @Transactional
     public UserDTO signUp(SignupRequestDTO signupRequestDTO){
         log.info("Signup a user with email {}", signupRequestDTO.getEmail());
         boolean exists = userRepository.existsByEmail(signupRequestDTO.getEmail());
@@ -30,6 +36,11 @@ public class AuthService {
 
         user.setPassword(BCrypt.withDefaults().hashToString(12,signupRequestDTO.getPassword().toCharArray()));
         userRepository.save(user);
+        PersonDTO personDTO =PersonDTO.builder()
+                .name(user.getName())
+                .userId(user.getId())
+                .build();
+       connectionClient.createUserInGrapDB(personDTO);
         return modelMapper.map(user,UserDTO.class);
     }
 

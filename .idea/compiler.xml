@@ -18,6 +18,7 @@
         </processorPath>
         <module name="APIGateway" />
         <module name="connectionService" />
+        <module name="notification-service" />
         <module name="userService" />
         <module name="postsService" />
       </profile>
@@ -31,6 +32,7 @@
       <module name="APIGateway" options="-parameters" />
       <module name="DiscoveryServer" options="-parameters" />
       <module name="connectionService" options="-parameters" />
+      <module name="notification-service" options="-parameters" />
       <module name="notificationService" options="-parameters" />
       <module name="postsService" options="-parameters" />
       <module name="userService" options="-parameters" />

@@ -1,10 +1,12 @@
 package com.linkedIn.connectionService.service;
 
+import com.linkedIn.connectionService.auth.AuthContextHolder;
 import com.linkedIn.connectionService.dto.PersonDTO;
 import com.linkedIn.connectionService.entity.Person;
 import com.linkedIn.connectionService.repository.PersonRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
@@ -37,5 +39,41 @@ public class ConnectionsService {
         return personDTO;
 
 
+    }
+
+
+    public void sendConnectionRequest(Long receiver) {
+        Long sender=AuthContextHolder.getCurrentUserId();
+        if(isRequestAlreadyPresent(sender,receiver)){
+            throw new RuntimeException("connection request already present between users");
+        }
+        personRepository.addConnectionRequest(sender,receiver);
+        log.info("successfully request sent to {} by {}",sender,receiver);
+    }
+
+    public boolean isRequestAlreadyPresent(Long sender, Long receiver){
+     if(isConnectAreadyPresent(sender,receiver)){
+         throw new RuntimeException("connection already present between user");
+     }
+     return personRepository.connectionRequestExists(sender,receiver);
+    }
+
+    public boolean isConnectAreadyPresent(Long sender , Long receiver){
+        return personRepository.alreadyConnected(sender,receiver);
+
+    }
+
+    public void acceptTheRequest(Long requester) {
+
+        Long accepter = AuthContextHolder.getCurrentUserId();
+        if(isConnectAreadyPresent(requester,accepter)){
+            throw new RuntimeException("There is already connection between two users");
+        }
+        //check is there request or not from requester first
+        if(!isRequestAlreadyPresent(requester,accepter)){
+            throw new RuntimeException("There is no request from "+requester);
+        }
+        personRepository.acceptConnectionRequest(requester,accepter);
+        log.info("successfuly connection request created in between {} {}",requester,accepter);
     }
 }

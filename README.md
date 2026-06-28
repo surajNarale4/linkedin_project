@@ -134,4 +134,4 @@ GET    /connections/suggestions        → Get 2nd degree suggestions
 ## Author
 
 **Suraj Narale**
-[LinkedIn](linkedin.com/in/suraj-narale) • [GitHub](github.com/surajNarale4)
+[LinkedIn](https://linkedin.com/in/suraj-narale) • [GitHub](github.com/surajNarale4)

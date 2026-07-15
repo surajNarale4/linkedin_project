@@ -1,4 +1,3 @@
-version: "3.9"
 
 services:
 
@@ -18,7 +17,7 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
     networks:
-        - my-network
+        - my_network
 
 
   neo4j:
@@ -34,128 +33,137 @@ services:
       - neo4j-data:/data
 
     networks:
-      - my-network
+      - my_network
 
-  user_db:
+  user-db:
     image: postgres
-    container_name: user_db
+    container_name: user-db
     environment:
       POSTGRES_DB: userDB
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: surajnarale
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data://var/lib/postgresql/MAJOR/docker
+
     networks:
       - my_network
 
-  post_db:
+  post-db:
     image: postgres
-    container_name: post_db
+    container_name: post-db
     environment:
       POSTGRES_DB: postDB
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: surajnarale
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/MAJOR/docker
+
     networks:
       - my_network
 
-  notification_db:
+  notification-db:
     image: postgres
-    container_name: notification_db
+    container_name: notification-db
     environment:
       POSTGRES_DB: notificationDB
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: surajnarale
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/MAJOR/docker
+
     networks:
       - my_network
 
 
-  api_gateway:
-    image: krekrot/api-gateway
-    container_name: api_gateway
+  api-gateway:
+    image: krekrot/api-gateway:0.0.1
+    container_name: api-gateway
     ports:
       - "9111:9111"
     networks:
       - my_network
     depends_on:
-      -
+      - discovery-server
+    environment:
+      EUREKA_SERVER_URL: http://discovery-server:9024/eureka/
 
-  discovery_server:
-    image: krekrot/discovery-server
-    container_name: discovery_server
+
+  discovery-server:
+    image: krekrot/discover-server
+    container_name: discovery-server
     ports:
       - "9024:9024"
     networks:
       - my_network
-    depends_on:
-      -
 
-  posts_service:
-    image : krekrot/linkedin-posts-service
-    container_name: posts_service
+
+  posts-service:
+    image : krekrot/linkedin-posts-service:0.0.1-SNAPSHOT
+    container_name: posts-service
     ports:
       - "9021:9021"
     environment:
-      POSTS_SERVICE_DB_URL: postgresql://user_db:5432/postDB
+      POSTS_SERVICE_DB_URL: jdbc:postgresql://post-db:5432/postDB
       POSTS_DB_USERNAME: postgres
       POSTS_DB_PASSWORD: surajnarale
-      EUREKA_SERVER_URL: http://discovery_server:9024/eureka/
-      KAFKA_BOOTSTRAP_SERVERS: http://kafka:9092
+      EUREKA_SERVER_URL: http://discovery-server:9024/eureka/
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     networks:
       - my_network
     depends_on:
-      -
+      - post-db
+      - kafka
 
-  user_service:
-    image: krekrot/linkedin-user-service
-    container_name: user_service
+  user-service:
+    image: krekrot/linkedin-user-service:0.0.1-SNAPSHOT
+    container_name: user-service
     ports:
       - "9022:9022"
     environment:
-      USER_SERVICE_DB_URL: postgresql://user_db:5432/userDB
+      USER_SERVICE_DB_URL: jdbc:postgresql://user-db:5432/userDB
       USER_DB_USERNAME: postgres
       USER_DB_PASSWORD: surajnarale
-      EUREKA_SERVER_URL: http://discovery_server:9024/eureka/
+      EUREKA_SERVER_URL: http://discovery-server:9024/eureka/
     networks:
       - my_network
     depends_on:
-      -
+      - user-db
 
-  connection_service:
-    image: krekrot/linkedin-connection-service
-    container_name: connection_service
+
+  connection-service:
+    image: krekrot/linkedin-connection-service:0.0.1-SNAPSHOT
+    container_name: connection-service
     ports:
       - "9030:9030"
     environment:
-      EUREKA_SERVER_URL: http://discovery_server:9024/eureka/
+      EUREKA_SERVER_URL: http://discovery-server:9024/eureka/
+      NEO4J_URI: bolt://neo4j:7687
     networks:
       - my_network
     depends_on:
-      -
+      - neo4j
 
-  notification_service:
-    image: krekrot/linkedin-notification-service
-    container_name: notification_service
+  notification-service:
+    image: krekrot/linkedin-notification-service:0.0.1-SNAPSHOT
+    container_name: notification-service
     environment:
-      NOTI_SERVICE_DB_URL: postgresql://notification_db:5432/notificationDB
+      NOTI_SERVICE_DB_URL: jdbc:postgresql://notification-db:5432/notificationDB
       NOTI_DB_USERNAME: postgres
       NOTI_DB_PASSWORD: surajnarale
-      EUREKA_SERVER_URL: http://discovery_server:9024/eureka/
-      KAFKA_BOOTSTRAP_SERVERS: http://kafka:9092
+      EUREKA_SERVER_URL: http://discovery-server:9024/eureka/
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
 
     ports:
       - "9040:9040"
     networks:
       - my_network
     depends_on:
-      -
+      - notification-db
+      - kafka
 
 volumes:
   postgres_data:
   neo4j-data:
 
 networks:
-   my_networks:
+   my_network:
